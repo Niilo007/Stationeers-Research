@@ -12,6 +12,7 @@ alias rBoilingPoint r13
 alias rRate r12
 alias rOffset r11
 alias rBoilingPointC r10
+alias rMaxP r9
 alias dTarget d0
 alias dDial d1
 Program.BoilingPointCalculator.Main:
@@ -27,22 +28,27 @@ Program.BoilingPointCalculator.Main:
 j Program.BoilingPointCalculator.Main 
 Calculate.BoilingPoint:
   l rPressure dTarget Pressure
+  min rPressure rPressure rMaxP
   mul r0 rPressure rRate
   add rBoilingPoint r0 rOffset
 j ra
 Select.N2:
   move rRate cN2.Rate
   move rOffset cN2.Offset
+  move rMaxP 3390
 j ra 
 Select.O2:
   move rRate cO2.Rate
   move rOffset cO2.Offset
+  move rMaxP 5005
 j ra 
 Select.Vol:
   move rRate cVol.Rate
   move rOffset cVol.Offset
+  move rMaxP 4599
 j ra 
 Select.Water:
   move rRate cWater.Rate
   move rOffset cWater.Offset
+  move rMaxP 22100
 j ra 
