@@ -1,0 +1,86 @@
+define DSORTER -1009150565
+define DUNLOADER 750118160
+define DFLIPFLOP -810874728
+define DDIAL 554524804
+define DSWITCH 321604921
+define DLED 1944485013
+alias dUnloader d0
+define DINLET -1469588766
+#alias dSorter d1
+#alias dDial d2
+#alias dFlipFlop d3
+sb DUNLOADER Mode 0
+sb DSORTER Mode 2
+sb DFLIPFLOP Setting 0
+sb DFLIPFLOP SettingOutput 0
+#s dUnloader Mode 0
+#s dSorter Mode 2
+#s dFlipFlop Setting 0
+#s dFlipFlop SettingOutput 0
+s db Setting 0
+SleepMode:
+  move r15 0
+  sb DFLIPFLOP On 0
+  sb DSORTER On 0
+  sb DUNLOADER On 0
+  sb DLED On 0
+  lb r0 DINLET ImportCount Average
+  bgtz r0 Main
+  lb r0 DSWITCH Setting Average
+  yield
+  lb r1 DSWITCH Setting Average
+  bne r0 r1 Main
+j SleepMode
+Main:
+  move r6 0
+  sb DINLET ClearMemory 1
+  sb DLED On 1
+  sb DFLIPFLOP On 1
+  lb r0 DSWITCH Setting Average
+  #l r0 dDial Setting
+  ls r1 dUnloader 0 Occupied
+  seqz r1 r1
+  add r15 r15 r1
+  bge r15 30 SleepMode
+  beq r0 0 BulkMode
+  beq r0 1 BeltMode
+  yield
+j Main
+BulkMode:
+  sb DLED Color 3
+  sb DFLIPFLOP Mode 1
+  sb DSORTER On 0
+  sb DUNLOADER On 0
+  #s dFlipFlop Mode 1
+  #s dSorter On 0
+  #s dUnloader On 0
+  yield
+j Main
+BeltMode:
+  sb DLED Color 2
+  sb DFLIPFLOP Mode 0
+  sb DSORTER On 1
+  #s dFlipFlop Mode 0
+  #s dSorter On 1
+  #s dUnloader On 1
+    ls r0 dUnloader 0 Occupied
+    seqz r4 r0
+    lbs r2 DSORTER 0 Occupied Average
+    seqz r3 r2
+    and r5 r3 r4
+    add r6 r6 r5
+    bgt r6 100 SleepMode
+	lb r7 DSWITCH Setting Average
+	beqz r7 BulkMode
+    s dUnloader On r3
+  breqz r2 -10
+  yield
+  s dUnloader On 0
+  lbs r1 DSORTER 0 Class Average
+  seq r1 r1 17 #Tool
+  not r1 r1
+  and r0 r0 r1
+  sb DSORTER Output r0
+  #s dSorter Output r0
+  yield
+j Main 
