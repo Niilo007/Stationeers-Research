@@ -1,0 +1,50 @@
+alias dFurnaceA d0
+alias dFurnaceB d1
+define DVENTS -1129453144
+define DGASSENSORS -1252983604
+define DPIPEANALZYERS 435685051
+define DCONSOLES 235638270
+s db Setting 0
+Main:
+  yield
+  #Pressure Requlation
+    sb DVENTS Mode 1
+    lb r0 DGASSENSORS Pressure Maximum
+    sgt r0 r0 0
+    lb r1 DPIPEANALZYERS Pressure Maximum
+    slt r4 r1 50000
+    and r0 r0 r4
+    sb DVENTS On r0
+    bgt r1 40000 Danger
+  #Furnaces
+  brdns dFurnaceA 7
+    ls r0 dFurnaceA 0 Quantity
+    sgtz r1 r0
+    s dFurnaceA On r1
+    s dFurnaceA Activate r1
+    ls r4 dFurnaceA 0 PrefabHash
+    s db Setting r4 #__/<-
+    yield 
+    yield
+  brdns dFurnaceB 7
+    ls r2 dFurnaceB 0 Quantity
+    sgtz r3 r2
+    s dFurnaceB On r3
+    s dFurnaceB Activate r3
+    ls r4 dFurnaceB 0 PrefabHash
+    s db Setting r4 #__/<-
+  #Display 
+    div r2 r2 100
+    add r0 r0 r2
+    sgtz r4 r0
+    sb HASH("StructureConsoleLED5") On r4
+    sb DPIPEANALZYERS On r4
+    sb DCONSOLES On r4
+    sb HASH("StructureConsoleLED5") Setting r0
+	sb HASH("StructureConsoleLED5") Color 2 #Green
+  yield
+j Main
+Danger:
+  sb HASH("StructureArcFurnace") On 0
+  sb HASH("StructureConsoleLED5") Color 4 #Red
+j Main 
